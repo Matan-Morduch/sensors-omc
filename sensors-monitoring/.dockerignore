@@ -1,0 +1,34 @@
+# Node modules
+node_modules
+
+# NestJS specific ignore
+dist
+test
+*.spec.ts
+*.test.ts
+
+# Environment files
+*.env
+*.env.local
+*.env.development
+*.env.test
+*.env.production
+
+# Various log files
+*.log
+*.out
+npm-debug.log*
+
+# Git and version control
+.git
+.gitignore
+.gitattributes
+
+# Other files and folders to ignore
+coverage
+.DS_Store
+.vscode
+.editorconfig
+README.md
+CHANGELOG.md
+LICENSE.md

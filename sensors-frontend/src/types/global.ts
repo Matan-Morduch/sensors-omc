@@ -1,0 +1,1 @@
+export type face = 'west' | 'east' | 'south' | 'north'; 

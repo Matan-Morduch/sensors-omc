@@ -1,0 +1,20 @@
+.content {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+
+  &__faulty-sensors {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    grid-column: 1 / 2;
+  }
+
+  &__avg-temp-weekly-report {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    grid-column: 2 / -1;
+  }
+}
