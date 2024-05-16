@@ -51,6 +51,7 @@ export class SensorsConsumer implements OnModuleInit {
 
     try {
       await this.processBuffer(topic, payload.partition);
+
       await this.consumerService.commitOffsets(
         consumer,
         payload.topic,
@@ -86,9 +87,10 @@ export class SensorsConsumer implements OnModuleInit {
 
   private async processBuffer(topic: Topics, partition: number) {
     const partitionBuffer = this.buffers[topic].get(partition);
-
     if (topic === "sensors-create") {
-      await this.sensorsService.bulkCreateOrUpdateSensors(partitionBuffer.buffer);
+      await this.sensorsService.bulkCreateOrUpdateSensors(
+        partitionBuffer.buffer
+      );
     } else if (topic === "sensors-delete") {
       await this.sensorsService.bulkDeleteSensors(partitionBuffer.buffer);
     }

@@ -5,11 +5,13 @@ import { ConsumerService } from "../../Consumer.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Sensor } from "shared/entities/Sensor/sensor.entity";
 import { ScheduleModule } from "@nestjs/schedule";
+import { CacheModule } from "@nestjs/cache-manager";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Sensor]),
-    ScheduleModule.forRoot()
+    ScheduleModule.forRoot(),
+    CacheModule.register({ ttl: 0 }),
   ],
   providers: [SensorsService, SensorsConsumer, ConsumerService],
 })

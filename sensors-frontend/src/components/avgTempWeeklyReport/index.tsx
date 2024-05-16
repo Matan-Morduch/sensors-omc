@@ -13,7 +13,7 @@ import {
 import { Order, getComparator, stableSort } from "@/utils/tableSortingUtils";
 import useGetWeeklyAvgFaceTemperature from "@/api/hooks/useGetWeeklyAvgFaceTemperature";
 import { WeeklyAvgFaceTemperature } from "@/api/types/sensors";
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 const index = () => {
   const { data, error, isLoading, isFetching } = useGetWeeklyAvgFaceTemperature();
@@ -75,7 +75,7 @@ const index = () => {
               (row, index) => (
                 <TableRow key={index}>
                   <TableCell>{row.face}</TableCell>
-                  <TableCell>{moment.utc(row.timestamp).format('MMMM Do YYYY, h:mm:ss a')}</TableCell>
+                  <TableCell>{moment.utc(row.timestamp).tz('Asia/Jerusalem').format('MMMM Do YYYY, h:mm:ss a')}</TableCell>
                   <TableCell>{row.avgTemperature}</TableCell>
                 </TableRow>
               )

@@ -15,11 +15,17 @@ type ExtendedConsumerRunConfig = Omit<ConsumerRunConfig, "eachMessage"> & {
   ) => Promise<void>;
 };
 
+const customLogger = ({ namespace, level, label, log }) => {
+  const { message, ...extra } = log;
+  console.log(`[${level}] ${namespace} - ${label}: ${message}`, extra);
+};
+
 @Injectable()
 export class ConsumerService implements OnApplicationShutdown {
   private readonly kafka = new Kafka({
     brokers: [process.env.KAFKA_BROKER],
-    logLevel: logLevel.WARN,
+    logLevel: logLevel.WARN, // Set log level to DEBUG
+    logCreator: () => customLogger,
   });
 
   private readonly consumers: Consumer[] = [];
@@ -32,7 +38,12 @@ export class ConsumerService implements OnApplicationShutdown {
     autoCommit: boolean = true
   ) {
     for (let i = 0; i < consumerCount; i++) {
-      const consumer = this.kafka.consumer({ groupId: `${groupId}` });
+      const consumer = this.kafka.consumer({
+        groupId: `${groupId}`,
+        sessionTimeout: 60000 * 5, 
+        heartbeatInterval: 30000,
+        
+      });
       await consumer.connect();
       await consumer.subscribe(topics);
       this.consumers.push(consumer);

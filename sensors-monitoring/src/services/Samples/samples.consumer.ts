@@ -33,7 +33,7 @@ export class SamplesConsumer implements OnModuleInit {
         eachMessage: this.handleEachMessage.bind(this),
         autoCommit: false,
       },
-      14
+      8
     );
   }
 
@@ -81,23 +81,24 @@ export class SamplesConsumer implements OnModuleInit {
     const partitionBuffer = this.buffers.get(partition);
     const sensorsToCreateOrUpdate = new Map<number, CreateSensorDto>();
 
-    const sensorIds = new Set(
-      partitionBuffer.buffer.map((sample) => sample.id)
+    const existingSensors = await this.sensorsService.findFaultySensors();
+
+    const faultySensorsMap = new Map(
+      existingSensors.map((sensor) => [sensor.id, sensor.faulty])
     );
 
-    const existingSensors = await this.sensorsService.findSensorsByIds(
-      Array.from(sensorIds)
-    );
+    const batchSize = 100; // Adjust the batch size as needed
+    const bufferLength = partitionBuffer.buffer.length;
 
-    const existingSensorsMap = new Map(
-      existingSensors.map((sensor) => [sensor.id, sensor])
-    );
+    for (let i = 0; i < bufferLength; i += batchSize) {
+      const batch = partitionBuffer.buffer.slice(i, i + batchSize);
 
-    await Promise.all(
-      partitionBuffer.buffer.map((sample) =>
-        this.handleSample(sample, existingSensorsMap, sensorsToCreateOrUpdate)
-      )
-    );
+      await Promise.all(
+        batch.map((sample) =>
+          this.handleSample(sample, faultySensorsMap, sensorsToCreateOrUpdate)
+        )
+      );
+    }
 
     await this.saveData(sensorsToCreateOrUpdate, partitionBuffer.buffer);
     partitionBuffer.buffer = [];
@@ -105,7 +106,7 @@ export class SamplesConsumer implements OnModuleInit {
 
   private async handleSample(
     sample: any,
-    existingSensorsMap: Map<number, any>,
+    faultySensorsMap: Map<number, boolean>,
     sensorsToCreateOrUpdate: Map<number, any>
   ): Promise<void> {
     const timeStamp = new Date(sample.timestamp * 1000);
@@ -119,14 +120,15 @@ export class SamplesConsumer implements OnModuleInit {
 
     const thresholdTemperature =
       await this.samplesService.getAverageFaceHourlyTemperature(sample.face);
+      
     const faulty = thresholdTemperature
       ? sample.temperature > thresholdTemperature
       : false;
 
-    const existingSensor = existingSensorsMap.get(sample.id);
+    const sensorIsFaulty = faultySensorsMap.get(sample.id);
     const shouldWarn = this.shouldWarnForFaultySensor(
       sample.id,
-      existingSensor,
+      sensorIsFaulty,
       faulty
     );
 
@@ -134,30 +136,22 @@ export class SamplesConsumer implements OnModuleInit {
       this.warnForFaultySensor(sample.id);
     }
 
-    // If faulty = false but the sensor is faulty i don't want to update it to be not faulty.
-    if (!existingSensor || !existingSensor.faulty) {
-      sensorsToCreateOrUpdate.set(sample.id, {
-        id: sample.id,
-        face: sample.face,
-        faulty: faulty,
-      });
-    } else {
-      sensorsToCreateOrUpdate.set(sample.id, {
-        id: sample.id,
-        face: sample.face,
-      });
-    }
+    sensorsToCreateOrUpdate.set(sample.id, {
+      id: sample.id,
+      face: sample.face,
+      faulty: faulty,
+    });
   }
 
   private shouldWarnForFaultySensor(
     sensorId: number,
-    existingSensor: any,
+    sensorIsFaulty: boolean,
     faulty: boolean
   ): boolean {
     return (
       faulty &&
       !this.thrownWarningForSensorsIds.has(sensorId) &&
-      (!existingSensor || !existingSensor.faulty)
+      !sensorIsFaulty
     );
   }
 

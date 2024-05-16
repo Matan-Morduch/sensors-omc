@@ -1,15 +1,9 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  ValidationPipe,
-} from "@nestjs/common";
+import { Module, ValidationPipe } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_PIPE } from "@nestjs/core";
 import { SamplesModule } from "./services/Samples/samples.module";
 import { KafkaModule } from "./services/kafka/kafka.module";
 import { SensorsModule } from "./services/Sensors/sensors.module";
-import { PrometheusModule } from "@willsoto/nestjs-prometheus";
 import ormConfig from "shared/db/orm.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
@@ -26,7 +20,6 @@ import { TypeOrmModule } from "@nestjs/typeorm";
     TypeOrmModule.forRootAsync({
       useFactory: ormConfig,
     }),
-    PrometheusModule.register(),
     KafkaModule,
     SamplesModule,
     SensorsModule,

@@ -1,0 +1,93 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+lerna-debug.log
+package-lock.json
+yarn.lock
+
+# Logs
+logs/
+*.log
+*.log.*
+*.tsbuildinfo
+
+# Dependency directories
+jspm_packages/
+bower_components/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+
+# NestJS specific
+dist/
+.out/
+*.local
+*.log
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+.DS_Store
+
+# Ignore build output
+build/
+dist/
+public/
+
+# Ignore temporary files
+temp/
+tmp/
+*.tmp
+
+# Ignore coverage reports
+coverage/
+*.lcov
+
+# Ignore other generated files
+.sass-cache/
+connect.lock
+coverage/
+lib-cov/
+*.seed
+
+# Ignore editor-specific files
+*.sublime-project
+*.sublime-workspace
+*.swp
+*~
+.project
+.idea
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# React specific
+/.next/
+/out/
+.next/
+/.next/cache/
+/.next/server/
+
+# Ignore storybook files
+out/
+
+# Ignore yarn berry files
+.cache/
+.pnp.*
+.yarn/
+
+# Ignore Docker specific files
+docker-compose.override.yml
+docker-compose.debug.yml
+.docker
+
+# Ignore build files
+build/

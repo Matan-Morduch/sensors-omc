@@ -7,7 +7,7 @@ import { KafkaService } from "../kafka/kafka.service";
 @Injectable()
 export class SamplesService {
   private batch: SampleCreateEvent[] = [];
-  private readonly maxBatchSize: number = 1000;
+  private readonly maxBatchSize: number = 500;
   private readonly batchTimer: number = 1000;
 
   constructor(
