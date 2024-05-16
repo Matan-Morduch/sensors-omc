@@ -4,6 +4,7 @@ import { SensorsService } from "./sensors.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Sensor } from "shared/entities/Sensor/sensor.entity";
 import { CacheModule } from "@nestjs/cache-manager";
+import { KafkaService } from "../kafka/kafka.service";
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { CacheModule } from "@nestjs/cache-manager";
     CacheModule.register({ ttl: 0 }),
   ],
   controllers: [SensorsController],
-  providers: [SensorsService],
+  providers: [SensorsService, KafkaService],
 })
 export class SensorsModule {}

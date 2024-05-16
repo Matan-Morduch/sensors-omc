@@ -7,7 +7,6 @@ docker-compose up -d
 There is no need for migrations as the sensors-monitoring will automatically run the migrations
 
 ## Points about the project:
-
 - Notice The application can take up to 2 minutes to start up, this is because of the kafka rebalancing all the consumers
 - You can see the faulty sensors logs in the sensors-monitoring service, notice that it only prints its faulty if the sensor wasn’t faulty before, if we get more samples which are faulty it won’t print them ( I did it because i guessed we won’t care because we already know the sensor is faulty and until we fix it there is no reason to spam with logs )
 - right now if i delete a sensor i delete its samples, i guessed that we won’t care about data from a delete sensor even if its historic data.

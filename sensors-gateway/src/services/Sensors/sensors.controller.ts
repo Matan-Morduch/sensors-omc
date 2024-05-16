@@ -6,27 +6,32 @@ import {
   Param,
   ParseIntPipe,
   Get,
-  Inject,
 } from "@nestjs/common";
 import { SensorsService } from "./sensors.service";
 import { CreateSensorDto } from "shared/entities/Sensor/dtos/sensor-create.dto";
-import { Cache } from "cache-manager";
-import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { KafkaService } from "../kafka/kafka.service";
 
 @Controller("sensors")
 export class SensorsController {
   constructor(
     private readonly sensorsService: SensorsService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache
+    private readonly kafkaService: KafkaService,
+
   ) {}
 
   @Post()
   createSample(@Body() data: CreateSensorDto) {
+    if (!this.kafkaService.isConnected) {
+      throw new Error('Kafka is not connected yet.');
+    }
     this.sensorsService.createSensor(data);
   }
 
   @Delete(":id")
   deleteSample(@Param("id", ParseIntPipe) id: number) {
+    if (!this.kafkaService.isConnected) {
+      throw new Error('Kafka is not connected yet.');
+    }
     this.sensorsService.deleteSensor(id);
   }
 

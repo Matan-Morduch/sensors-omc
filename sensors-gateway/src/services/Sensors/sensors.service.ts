@@ -30,7 +30,7 @@ export class SensorsService implements OnModuleInit {
     @InjectRepository(Sensor)
     private readonly sensorsRepository: Repository<Sensor>,
     @Inject(CACHE_MANAGER)
-    private cacheManager: Cache
+    private cacheManager: Cache,
   ) {}
 
   async onModuleInit() {

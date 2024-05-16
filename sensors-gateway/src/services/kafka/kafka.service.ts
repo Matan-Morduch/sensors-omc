@@ -6,6 +6,8 @@ import { Admin, Kafka } from "kafkajs";
 export class KafkaService implements OnModuleDestroy {
   private kafka: Kafka;
   private admin: Admin;
+  public isConnected: boolean = false;
+  private retryInterval: number = 2000;
 
   constructor() {
     this.kafka = new Kafka({
@@ -13,7 +15,25 @@ export class KafkaService implements OnModuleDestroy {
       brokers: [process.env.KAFKA_BROKER],
     });
     this.admin = this.kafka.admin();
-    this.admin.connect();
+    this.connectWithRetry();
+  }
+
+  private async connectWithRetry() {
+    while (true) {
+      try {
+        await this.admin.connect();
+        console.log('Connected to Kafka');
+        this.isConnected = true;
+        break;
+      } catch (error) {
+        console.error('Failed to connect to Kafka, retrying in 2 seconds...', error);
+        await this.sleep(this.retryInterval);
+      }
+    }
+  }
+
+  private sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   async ensureTopicExists(
